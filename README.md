@@ -5,32 +5,19 @@ actions.  Loosely based on [adjust/gohub](https://github.com/adjust/gohub).
 
 ## Usage
 
-<<<<<<< HEAD
 `./d-hub --config dhub.json`
-=======
-  ./dhub --config dhub.json
->>>>>>> e6551e8c20b87719c707840a05a9a4b44a50995b
 
 ## Compiling
 
 * Make sure you have a [D compiler](http://dlang.org/)  and [dub](http://code.dlang.org/) installed.
 * Clone the repository
 
-<<<<<<< HEAD
 `git clone https://github.com/ysgard/d-hub.git`
 
 * Build the project
 
 `cd d-hub`
 `dub`
-=======
-  git clone https://github.com/ysgard/d-hub.git
-
-* Build the project
-
-  cd d-hub
-  dub
->>>>>>> e6551e8c20b87719c707840a05a9a4b44a50995b
 
 ## License
 
