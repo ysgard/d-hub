@@ -1,10 +1,11 @@
 {
-	"name": "d-hub",
-	"description": "A simple vibe.d server application.",
-	"copyright": "Copyright © 2014, ysgard",
-	"authors": ["ysgard"],
-	"dependencies": {
-		"vibe-d": ">=0.7.17"
-	},
-	"versions": ["VibeDefaultMain"]
+		"name": "d-hub",
+		"description": "A web app that receives github notifications and runs shell scripts",
+		"copyright": "Copyright © 2014, ysgard",
+		"authors": ["ysgard"],
+		"dependencies": {
+				"vibe-d": ">=0.7.17"
+		},
+		"versions": ["VibeDefaultMain"],
+		"license": "MIT",
 }

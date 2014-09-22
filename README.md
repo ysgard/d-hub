@@ -1,11 +1,51 @@
 # D-Hub
 
-A simple githook web app to catch github web notifications and perform
+A simple web app to catch GitHub webhook notifications and perform
 actions.  Loosely based on [adjust/gohub](https://github.com/adjust/gohub).
 
 ## Usage
 
-`./d-hub --config dhub.json`
+`./d-hub --config d-hub.json`
+
+Where `d-hub.json` is a file containing the following configurables
+and list of hooks:
+
+```
+{
+	"port": 9003,
+	"logfile": "./d-hub.log",
+	"hooks: [
+		{
+			"repo": "my_repo",
+			"branch": "master",
+			"action": "shell",
+			"command": "/opt/d-hub/scripts/update_my_repo.sh"
+		},
+		{
+		...etc...
+		}
+   	]
+}
+```
+			
+	
+*port* is the port d-hub will bind to.
+*logfile* messages will be logged to here.
+*hooks* This array takes a series of hook specifications.  Each hook
+*represents a distinct event sent by github.
+For example, the hook:
+```
+{
+	"repo": "mywebsite.com",
+	"branch": "deploy",
+	"action": "shell",
+	"command": "ruby /var/www/scripts/update_mywebsite.rb"
+}
+```
+Would be called when you specify a GitHub webhook with the payload
+`http://<hostname>:9003/mywebsite.com/deploy` and would run the script
+*`/var/www/scripts/update_mywebsite.rb` by spawning a shell and
+*invoking ruby.
 
 ## Compiling
 

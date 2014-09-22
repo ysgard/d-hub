@@ -9,6 +9,7 @@ module ysgard.dhub;
 
 import core.stdc.stdlib;
 import std.file;
+import std.process;
 import std.string;
 import vibe.d;
 
@@ -53,23 +54,46 @@ void readConfig(string configFile) {
 			default:
 				logFatal("Unknown action %s!", hook["action"].get!string());
 			}
-			config.hooks[hook["repo"].get!string()] = Hook(hook["branch"].get!string(),
-																										 hookAction,
+			config.hooks[hook["repo"].get!string()] = Hook(hook["branch"].get!string(), hookAction,
 																										 hook["command"].get!string());
 		}
 		
 		// Override port and logFile if the user passed those as command-line options
 		readOption!short("port|p", &config.port, "The port on which d-hub will listen for github events.");
 		readOption!string("log|l", &config.logFile, "The logfile used by d-hub.  Default is ./d-hub.log");
-		
+	 
 	} else {
 		logFatal("Cannot read configuration file: %s does not exist!", configFile);
 		exit(1);
 	}
 }
 
+
 void hook(HTTPServerRequest req, HTTPServerResponse res) {
-	res.writeBody("Event received!");
+	// Check to make sure we have the required fields
+	logInfo("Router received event, processing...");
+	enforceHTTP("repo" in req.params, HTTPStatus.badRequest, "Missing repo field.");
+	enforceHTTP("branch" in req.params, HTTPStatus.badRequest, "Missing branch field.");
+	res.writeBody(format("Event received! %s/%s\n\n%s", req.params["repo"], req.params["branch"], req.toString()));
+	if(req.params["repo"] in config.hooks) {
+		// Loaded hook, call the command
+		auto cmd = config.hooks[req.params["repo"]].cmd;
+		switch (config.hooks[req.params["repo"]].action) {
+		default:
+			// log strange action and exit
+			logWarn("Action %d for %s/%s not recognized, skipping...", req.params["repo"], req.params["branch"]);
+			break;
+		case Action.shell:
+			logInfo("Spawning shell for command:\n%s", cmd);
+			auto pid = spawnShell(cmd);
+			auto exitCode = wait(pid);
+			logInfo("Shell command completed, status=%d", exitCode);
+			break;
+		case Action.rabbitmq:
+			logInfo("Rabbitmq processing not handled at this time!");
+			break;
+		}
+	}
 }
 
 void dumpConfig() {
@@ -93,6 +117,10 @@ shared static this() {
 	//dumpConfig();
 	// Tell Vibe to log to the specified logfile
 	setLogFile(config.logFile);
+
+	// Create new routers to handle the hooks
+	auto router = new URLRouter;
+	router.post("/:repo/:branch", &hook);
 	
 
 	// Start the server and listen
@@ -100,6 +128,6 @@ shared static this() {
 	settings.port = config.port;
 	settings.bindAddresses = ["::1", "127.0.0.1"];
 	logInfo("Starting d-hub on localhost:%d", settings.port);
-	listenHTTP(settings, &hook);
+	listenHTTP(settings, router);
 }
 
