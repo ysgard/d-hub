@@ -1,10 +1,12 @@
 {
 		"port": 9003,
+		"logfile": "./d-hub.log",
 		"hooks": [
 				{
 						"repo": "my_repo",
 						"branch": "master",
-						"action": { "shell": "/opt/d-hub/scripts/update_my_repo.sh" }
+						"action": "shell",
+						"command": "/opt/d-hub/scripts/update_my_repo.sh"
 				}
 		]
 }
