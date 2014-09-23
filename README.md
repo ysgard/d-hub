@@ -47,6 +47,11 @@ Would be called when you specify a GitHub webhook with the payload
 *`/var/www/scripts/update_mywebsite.rb` by spawning a shell and
 *invoking ruby.
 
+## Privilege Dropping
+
+d-hub was written using the vibe.d framework, and thus supports
+privilege dropping out of the box.  Do call it, use the form:
+
 ## Compiling
 
 * Make sure you have a [D compiler](http://dlang.org/)  and [dub](http://code.dlang.org/) installed.
