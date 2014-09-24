@@ -77,7 +77,7 @@ void hook(HTTPServerRequest req, HTTPServerResponse res) {
 	logInfo("Router received event, processing...");
 	enforceHTTP("repo" in req.params, HTTPStatus.badRequest, "Missing repo field.");
 	enforceHTTP("branch" in req.params, HTTPStatus.badRequest, "Missing branch field.");
-	res.writeBody(format("Event received! %s/%s\n\n%s", req.params["repo"], req.params["branch"], req.toString()));
+
 	if(req.params["repo"] in config.hooks) {
 		// Loaded hook, call the command
 		auto cmd = config.hooks[req.params["repo"]].cmd;
@@ -97,6 +97,7 @@ void hook(HTTPServerRequest req, HTTPServerResponse res) {
 			break;
 		}
 	}
+	res.writeBody(format("Event received! %s/%s\n\n%s", req.params["repo"], req.params["branch"], req.toString()));
 }
 
 void dumpConfig() {
