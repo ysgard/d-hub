@@ -24,6 +24,7 @@ struct Hook {
 struct Config {
 	string configFile;
 	string logFile;
+	string address;
 	short port;
 	Hook[string] hooks;
 }
@@ -41,6 +42,7 @@ void readConfig(string configFile) {
 		auto c = parseJsonString(jsonString);
 		if (c["port"].type != Json.undefined) config.port = c["port"].get!short();
 		if (c["logfile"].type != Json.undefined) config.logFile = c["logfile"].get!string();
+		if (c["address"].type != Json.undefined) config.address = c["address"].get!string();
 		int hooksProcessed = 0;
 		foreach(size_t index, Json hook; c["hooks"]) {
 			Action hookAction;
@@ -59,6 +61,7 @@ void readConfig(string configFile) {
 		}
 		
 		// Override port and logFile if the user passed those as command-line options
+		readOption!string("address|i", &config.address, "The interface IP address to listen on");
 		readOption!short("port|p", &config.port, "The port on which d-hub will listen for github events.");
 		readOption!string("log|l", &config.logFile, "The logfile used by d-hub.  Default is ./d-hub.log");
 	 
@@ -98,6 +101,7 @@ void hook(HTTPServerRequest req, HTTPServerResponse res) {
 
 void dumpConfig() {
 	logInfo("logFile : %s", config.logFile);
+	logInfo("address : %s", config.address);
 	logInfo("port : %d", config.port);
 	foreach (repo, hook; config.hooks) {
 		logInfo("---");
@@ -126,8 +130,6 @@ shared static this() {
 	// Start the server and listen
 	auto settings = new HTTPServerSettings;
 	settings.port = config.port;
-	settings.bindAddresses = ["::1", "127.0.0.1"];
-	logInfo("Starting d-hub on localhost:%d", settings.port);
+	settings.bindAddresses = [config.address];
 	listenHTTP(settings, router);
 }
-
