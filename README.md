@@ -5,9 +5,9 @@ actions.  Loosely based on [adjust/gohub](https://github.com/adjust/gohub).
 
 ## Usage
 
-`./d-hub --config d-hub.json`
+`./d-hub --config config.json`
 
-Where `d-hub.json` is a file containing the following configurables
+Where *config.json* is a file containing the following configurables
 and list of hooks:
 
 ```
@@ -30,11 +30,12 @@ and list of hooks:
 ```
 			
 	
-*port* is the port d-hub will bind to.
-*address* is the IP address d-hub will bind to.	
-*logfile* messages will be logged to here.
-*hooks* This array takes a series of hook specifications.  Each hook
-*represents a distinct event sent by github.
+- **port** is the port d-hub will bind to.
+- **address** is the IP address d-hub will bind to.	
+- **logfile** messages will be logged to here.
+- **hooks** This array takes a series of hook specifications.  Each
+hook represents a distinct event sent by github.
+
 For example, the hook:
 ```
 {
@@ -54,12 +55,14 @@ Would be called when you specify a GitHub webhook with the payload
 * Make sure you have a [D compiler](http://dlang.org/)  and [dub](http://code.dlang.org/) installed.
 * Clone the repository
 
-`git clone https://github.com/ysgard/d-hub.git`
+`$ git clone https://github.com/ysgard/d-hub.git`
 
 * Build the project
 
-`cd d-hub`
-`dub`
+```
+$ cd d-hub
+$ dub
+```
 
 ## License
 
