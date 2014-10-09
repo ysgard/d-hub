@@ -14,6 +14,7 @@ and list of hooks:
 {
 	"port": 9003,
 	"logfile": "./d-hub.log",
+	"address": "127.0.0.1",
 	"hooks: [
 		{
 			"repo": "my_repo",
@@ -30,6 +31,7 @@ and list of hooks:
 			
 	
 *port* is the port d-hub will bind to.
+*address* is the IP address d-hub will bind to.	
 *logfile* messages will be logged to here.
 *hooks* This array takes a series of hook specifications.  Each hook
 *represents a distinct event sent by github.
@@ -46,11 +48,6 @@ Would be called when you specify a GitHub webhook with the payload
 `http://<hostname>:9003/mywebsite.com/deploy` and would run the script
 *`/var/www/scripts/update_mywebsite.rb` by spawning a shell and
 *invoking ruby.
-
-## Privilege Dropping
-
-d-hub was written using the vibe.d framework, and thus supports
-privilege dropping out of the box.  Do call it, use the form:
 
 ## Compiling
 

@@ -10,6 +10,7 @@ module ysgard.dhub;
 import core.stdc.stdlib;
 import std.file;
 import std.process;
+import std.stdio;
 import std.string;
 import vibe.d;
 
@@ -56,8 +57,7 @@ void readConfig(string configFile) {
 			default:
 				logFatal("Unknown action %s!", hook["action"].get!string());
 			}
-			config.hooks[hook["repo"].get!string()] = Hook(hook["branch"].get!string(), hookAction,
-																										 hook["command"].get!string());
+			config.hooks[hook["repo"].get!string()] = Hook(hook["branch"].get!string(), hookAction, hook["command"].get!string());
 		}
 		
 		// Override port and logFile if the user passed those as command-line options
@@ -73,12 +73,14 @@ void readConfig(string configFile) {
 
 
 void hook(HTTPServerRequest req, HTTPServerResponse res) {
+
 	// Check to make sure we have the required fields
 	logInfo("Router received event, processing...");
 	enforceHTTP("repo" in req.params, HTTPStatus.badRequest, "Missing repo field.");
 	enforceHTTP("branch" in req.params, HTTPStatus.badRequest, "Missing branch field.");
-
+	
 	if(req.params["repo"] in config.hooks) {
+		logInfo(format("req.params['repo'] is %s, config.hooks is %s", req.params["repo"], config.hooks[req.params["repo"]]));
 		// Loaded hook, call the command
 		auto cmd = config.hooks[req.params["repo"]].cmd;
 		switch (config.hooks[req.params["repo"]].action) {
@@ -117,17 +119,18 @@ void dumpConfig() {
 shared static this() {
 	
 	// Check to make sure we're passed a configuration file, and that it exists.
-	string configFile = readRequiredOption!string("config|c", "The configuration file used by d-hub");
-	readConfig(configFile);	
-	//dumpConfig();
-	// Tell Vibe to log to the specified logfile
-	setLogFile(config.logFile);
+	string configFile = readRequiredOption!string("config|c", "(required) The configuration file used by d-hub");
+	
+	readConfig(configFile);
+
+	// Tell Vibe to log to the specified logfile, and turn off console logging.
+	setLogLevel(LogLevel.none);
+	setLogFile(config.logFile, LogLevel.info);
 
 	// Create new routers to handle the hooks
 	auto router = new URLRouter;
 	router.post("/:repo/:branch", &hook);
 	
-
 	// Start the server and listen
 	auto settings = new HTTPServerSettings;
 	settings.port = config.port;

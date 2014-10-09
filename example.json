@@ -7,13 +7,19 @@
 						"repo": "my_repo",
 						"branch": "master",
 						"action": "shell",
-						"command": "/opt/d-hub/scripts/update_my_repo.sh"
+						"command": "echo this was a triumph"
 				},
 				{
 						"repo": "ashesofatlantis.com",
 						"branch": "master",
 						"action": "shell",
 						"command": "/home/ysgard/scripts/ashes_of_atlantis_update.sh"
+				},
+				{
+						"repo": "testrepo.com",
+						"branch": "master",
+						"action": "shell",
+						"command": "/opt/d-hub-scripts/run_script.sh"
 				}
 		]
 }
